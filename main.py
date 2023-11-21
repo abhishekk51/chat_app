@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from databases import MongoDB
 
+
 # Instance of the FastAPI app
 app = FastAPI()
 
