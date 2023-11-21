@@ -1,0 +1,52 @@
+"""
+    Class to manage the messaging
+"""
+from fastapi import WebSocket
+from fastapi.encoders import jsonable_encoder
+
+from server.models.chat_message import ChatMessage
+
+
+class MessagingManager:
+    '''
+        Manages the active connections
+    '''
+
+    def __init__(self) -> None:
+        '''
+            Initializes the active connections
+        '''
+        self.active_connections: dict[str, set[WebSocket]] = {}
+
+    async def connect(self, websocket: WebSocket, room_id: str):
+        '''
+            Adds the connection to the active connections
+        '''
+        # Accept the user connection
+        await websocket.accept()
+
+        if room_id not in self.active_connections:
+            self.active_connections[room_id] = set()
+
+        self.active_connections[room_id].add(websocket)
+
+    def disconnect(self, websocket: WebSocket, room_id: str):
+        '''
+            Removes the connection from the active connections
+        '''
+        self.active_connections[room_id].remove(websocket)
+
+    async def send_message_to(self, websocket: WebSocket, message: ChatMessage):
+        '''
+            Sends the message to a specific client
+        '''
+        json_message = jsonable_encoder(message.to_dict())
+        await websocket.send_json(json_message)
+
+    async def broadcast(self, message: ChatMessage, room_id: str):
+        '''
+            Sends the message to all the clients
+        '''
+        print(f"Broadcasting message to {len(self.active_connections[room_id])} clients")
+        for connection in self.active_connections[room_id]:
+            await self.send_message_to(connection, message)

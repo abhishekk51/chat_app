@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+websockets
+uuid
+pymongo
+colorlog
+pydantic
+pydantic-settings
+python-dotenv
