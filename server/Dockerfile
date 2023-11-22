@@ -1,3 +1,5 @@
+# ignore this file for now, it's not used in the project
+
 FROM python:3.8-slim
 
 WORKDIR /app
