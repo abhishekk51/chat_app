@@ -32,7 +32,7 @@ async def handle_add_conversation(conversation: ConversationCreate, response: Re
     return {"message": "conversation not added"}
 
 
-@conversation_router.get("/conversations/{user_id}", status_code=status.HTTP_201_CREATED)
+@conversation_router.get("/conversations/{user_id}", status_code=status.HTTP_200_OK)
 async def handle_new_connection_conversation(user_id: str, response: Response):
     conversation_data = ConversationData()
     conversation = conversation_data.get_all_conversation(user_id)
@@ -77,7 +77,7 @@ async def send_message(websocket: WebSocket, conversation_id: str):
         chat_manager.disconnect(websocket, conversation_id)
 
 
-@conversation_router.get("/get-messages/{conversation_id}", status_code=status.HTTP_201_CREATED)
+@conversation_router.get("/get-messages/{conversation_id}", status_code=status.HTTP_200_OK)
 async def handle_new_connection_conversation(conversation_id: str, response: Response):
     message_data = MessageData()
     messages = message_data.get_messages_of(conversation_id)
