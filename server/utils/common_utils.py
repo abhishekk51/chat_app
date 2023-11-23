@@ -21,7 +21,7 @@ def timestamp_to_date_format(timestamp: float):
     today_date = datetime.utcnow().date()
 
     if dt.date() < today_date:
-        formatted_date = dt.strftime("%d-%m-%Y %H:%M")
+        formatted_date = dt.strftime("%d/%m/%Y")
     else:
         formatted_date = dt.strftime("%H:%M")
     return formatted_date
