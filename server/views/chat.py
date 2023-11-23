@@ -58,7 +58,7 @@ async def send_message(websocket: WebSocket, conversation_id: str):
             print(f"Received {data}")
 
             if "type" in data and data["type"] == "close":
-                chat_manager.disconnect(websocket, conversation_id)
+                await chat_manager.disconnect(websocket, conversation_id)
             else:
                 message = ChatMessage(
                     message_id=str(uuid.uuid4()),

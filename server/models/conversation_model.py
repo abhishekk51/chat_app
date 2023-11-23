@@ -13,8 +13,8 @@ class ConversationBase(BaseModel):
     description: str
     participants: list = []
     is_group: bool = False
-    hashed_user_ids: str = "" if is_group else hash_user_ids(participants) or ""
-    updated_at: Optional[float]
+    hashed_user_ids: Optional[str] = None
+    updated_at: Optional[float] = None
     last_message: str = ""
     is_active: bool = False
     is_deleted: bool = False
@@ -60,7 +60,7 @@ class UserConversationMap(BaseModel):
 
     user_id: str
     conversion_id: str
-    updated_at: float
+    updated_at: Optional[datetime.datetime] = None
 
     def to_dict(self):
         return {

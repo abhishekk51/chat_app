@@ -1,6 +1,6 @@
 """Main app server"""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
 from server.managers.mongo_db_manager import MongoDB
@@ -25,9 +25,12 @@ async def startup_event():
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown_event(background_tasks: BackgroundTasks):
     print("Shutting down")
     await MongoDB.close_connection()
+    for task in background_tasks.tasks:
+        print(task, 'taskkkkkkkkkkkkkk')
+        task.cancel()
 
 
 from server.urls import router as chat

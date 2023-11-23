@@ -1,5 +1,8 @@
+import json
+
 import aioredis
 
+from server.models.chat_message import ChatMessage
 from settings import get_settings
 
 settings = get_settings()
@@ -20,8 +23,9 @@ class RedisPubSubManager:
         self.redis_connection = await self._get_redis_connection()
         self.pubsub = self.redis_connection.pubsub()
 
-    async def _publish(self, room_id: str, message: str) -> None:
-        await self.redis_connection.publish(room_id, message)
+    async def _publish(self, room_id: str, message: ChatMessage) -> None:
+        serialized_message = json.dumps(message.to_dict())
+        await self.redis_connection.publish(room_id, serialized_message)
 
     async def subscribe(self, room_id: str) -> aioredis.Redis:
 
