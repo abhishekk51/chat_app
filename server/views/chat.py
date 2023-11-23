@@ -40,7 +40,7 @@ async def handle_new_connection_conversation(user_id: str, response: Response):
     return {"message": None, "data": {"conversation_list": conversation}}
 
 
-@conversation_router.websocket("/send-message/{conversation_id}")
+@conversation_router.websocket("/connect-conversation/{conversation_id}")
 async def send_message(websocket: WebSocket, conversation_id: str):
     """
         Function to handle new conenctions to the conversation
