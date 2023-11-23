@@ -4,6 +4,7 @@ from bson import ObjectId
 from server.db_controllers.conversation_db_data import ConversationDBData
 from server.db_controllers.user_conservation_db_data import UserConversationDBData
 from server.models.conversation_model import ConversationCreate, UserConversationMap, ConversationList
+from server.utils.common_utils import timestamp_to_date_format
 
 
 class ConversationData:
@@ -73,6 +74,7 @@ class ConversationData:
             conversation_cursor = self.conversation_db_inst.filter_conversation({"participants": user_id})
             for conversation in conversation_cursor:
                 conversation['_id'] = str(conversation['_id'])
+                conversation['updated_at_str'] = timestamp_to_date_format(conversation['updated_at'])
                 result.append(dict(conversation))
             return result
             # approach 2 where we can query the UserConversationMap collection
