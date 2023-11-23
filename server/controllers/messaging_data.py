@@ -1,7 +1,7 @@
 """Module providing the MessagingData class to interact with the messaging controllers"""
 import pymongo
 
-from server.managers.databases import MongoDBConnection
+from server.managers.mongo_db_manager import MongoDBConnection
 from settings import get_settings
 from server.models.chat_message import ChatMessage
 

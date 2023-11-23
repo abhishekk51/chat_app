@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from server.managers.databases import MongoDB
+from server.managers.mongo_db_manager import MongoDB
 
 # Instance of the FastAPI app
 app = FastAPI()

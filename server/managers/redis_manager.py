@@ -1,9 +1,13 @@
 import aioredis
 
+from settings import get_settings
+
+settings = get_settings()
+
 
 class RedisPubSubManager:
 
-    def __init__(self, host='localhost', port=6379):
+    def __init__(self, host=settings.REDIS_HOST, port=settings.REDIS_PORT):
         self.redis_connection = None
         self.redis_host = host
         self.redis_port = port

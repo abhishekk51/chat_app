@@ -14,7 +14,7 @@ class ConversationBase(BaseModel):
     participants: list = []
     is_group: bool = False
     hashed_user_ids: str = "" if is_group else hash_user_ids(participants) or ""
-    updated_at: float
+    updated_at: Optional[float]
     last_message: str = ""
     is_active: bool = False
     is_deleted: bool = False

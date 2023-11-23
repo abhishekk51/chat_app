@@ -1,7 +1,7 @@
 import pymongo
 from pymongo.collection import Collection
 
-from server.managers.databases import MongoDBConnection
+from server.managers.mongo_db_manager import MongoDBConnection
 from server.models.conversation_model import ConversationCreate
 
 
