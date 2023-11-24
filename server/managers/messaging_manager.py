@@ -39,9 +39,12 @@ class MessagingManager:
 
             async def run():
                 await self._pubsub_data_reader(pubsub_subscriber)
+            print('connection pubsub')
             threading.Thread(target=asyncio.run, args=(run(), )).start()
+            print(' pubsub connected')
             # SharedState.async_tasks.append(task)
             # BackgroundTasks().add_task(self._pubsub_data_reader, pubsub_subscriber)
+
         self.active_connections[room_id].add(websocket)
 
     async def disconnect(self, websocket: WebSocket, room_id: str):
