@@ -74,7 +74,9 @@ async def send_message(websocket: WebSocket, conversation_id: str):
                 # Send the message to all the clients
                 await chat_manager.broadcast(message, conversation_id)
     except WebSocketDisconnect:
-        chat_manager.disconnect(websocket, conversation_id)
+        print('acchaaaaa')
+        await chat_manager.disconnect(websocket, conversation_id)
+        print('chalaaaaa')
 
 
 @conversation_router.get("/get-messages/{conversation_id}", status_code=status.HTTP_200_OK)

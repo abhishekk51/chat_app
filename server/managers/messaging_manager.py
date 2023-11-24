@@ -3,10 +3,12 @@
 """
 import asyncio
 import json
+import threading
 
 from fastapi import WebSocket, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 
+from main import SharedState
 from server.managers.redis_manager import RedisPubSubManager
 from server.models.chat_message import ChatMessage
 
@@ -34,7 +36,11 @@ class MessagingManager:
             self.active_connections[room_id] = set()
             await self.pubsub_client.connect()
             pubsub_subscriber = await self.pubsub_client.subscribe(room_id)
-            task = asyncio.create_task(self._pubsub_data_reader(pubsub_subscriber))
+
+            async def run():
+                await self._pubsub_data_reader(pubsub_subscriber)
+            threading.Thread(target=asyncio.run, args=(run(), )).start()
+            # SharedState.async_tasks.append(task)
             # BackgroundTasks().add_task(self._pubsub_data_reader, pubsub_subscriber)
         self.active_connections[room_id].add(websocket)
 
@@ -64,7 +70,7 @@ class MessagingManager:
         await self.pubsub_client._publish(room_id, message)
 
     async def _pubsub_data_reader(self, pubsub_subscriber):
-        while True:
+        # while True:
             message = await pubsub_subscriber.get_message(ignore_subscribe_messages=True)
             if message is not None:
                 print(f"(Reader) Message Received: {message}")
