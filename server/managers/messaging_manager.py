@@ -33,19 +33,13 @@ class MessagingManager:
         await websocket.accept()
 
         if room_id not in self.active_connections:
-            self.active_connections[room_id] = set()
+            self.active_connections[room_id] = {websocket}
             await self.pubsub_client.connect()
             pubsub_subscriber = await self.pubsub_client.subscribe(room_id)
-
-            async def run():
-                await self._pubsub_data_reader(pubsub_subscriber)
-            print('connection pubsub')
-            threading.Thread(target=asyncio.run, args=(run(), )).start()
-            print(' pubsub connected')
-            # SharedState.async_tasks.append(task)
-            # BackgroundTasks().add_task(self._pubsub_data_reader, pubsub_subscriber)
-
-        self.active_connections[room_id].add(websocket)
+            task = asyncio.create_task(self._pubsub_data_reader(pubsub_subscriber))
+            SharedState.async_tasks.append(task)
+        else:
+            self.active_connections[room_id].add(websocket)
 
     async def disconnect(self, websocket: WebSocket, room_id: str):
         '''
@@ -73,14 +67,17 @@ class MessagingManager:
         await self.pubsub_client._publish(room_id, message)
 
     async def _pubsub_data_reader(self, pubsub_subscriber):
-        # while True:
-            message = await pubsub_subscriber.get_message(ignore_subscribe_messages=True)
-            if message is not None:
-                print(f"(Reader) Message Received: {message}")
-                room_id = message['channel'].decode('utf-8')
-                print('room_id', room_id)
-                all_sockets = self.active_connections[room_id]
-                for socket in all_sockets:
-                    data = message['data'].decode('utf-8')
-                    deserialized_message = json.loads(data)
-                    await socket.send_text(data)
+        try:
+            while True:
+                message = await pubsub_subscriber.get_message(ignore_subscribe_messages=True)
+                if message is not None:
+                    print(f"(Reader) Message Received: {message}")
+                    room_id = message['channel'].decode('utf-8')
+                    print('room_id', room_id)
+                    all_sockets = self.active_connections.get(room_id, set())
+                    for socket in all_sockets:
+                        if isinstance(socket, WebSocket):
+                            data = message['data'].decode('utf-8')
+                            await socket.send_text(data)
+        except asyncio.CancelledError:
+            pass  # Handle cancellation if needed

@@ -34,7 +34,10 @@ async def startup_event():
 async def shutdown_event():
     print("Shutting down.....")
     await MongoDB.close_connection()
-    print('abannndddd')
+    tasks = asyncio.all_tasks()
+    for task in tasks:
+        task.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
 
 
 from server.urls import router as chat
