@@ -1,6 +1,8 @@
 """
     Model class for chat messages
 """
+import datetime
+
 from pydantic import BaseModel
 
 
@@ -8,18 +10,21 @@ class ChatMessage(BaseModel):
     '''
         Chat message dataclass
     '''
-    message_id: str
-    user_id: str
     message: str
-    room_id: str
+    message_id: str
+    sender_id: str
+    receiver_id: str
+    conversation_id: str
+    updated_at: float
+    is_deleted: bool = False
 
-    def to_dict(self) -> dict:
-        '''
-            Converts the dataclass to a dictionary
-        '''
+    def to_dict(self):
         return {
-            'message_id': self.message_id,
             'message': self.message,
-            'user_id': self.user_id,
-            'room_id': self.room_id
+            'message_id': self.message_id,
+            'sender_id': self.sender_id,
+            'receiver_id': self.receiver_id,
+            'conversation_id': self.conversation_id,
+            'updated_at': self.updated_at,
+            'is_deleted': self.is_deleted
         }

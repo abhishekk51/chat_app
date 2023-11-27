@@ -1,5 +1,7 @@
 """Module providing the MessagingData class to interact with the messaging controllers"""
-from databases import MongoDBConnection
+import pymongo
+
+from server.managers.mongo_db_manager import MongoDBConnection
 from settings import get_settings
 from server.models.chat_message import ChatMessage
 
@@ -31,37 +33,24 @@ class MessageData:
             # ensure document is updated if it already exists
             print("Adding message to the database")
             self.messages_collection.insert_one(message.to_dict())
-
-        except TypeError as error:
-            print(f"Error adding message to the database: {error}")
-        except ValueError as error:
-            print(f"Error adding message to the database: {error}")
         except Exception as error:
             print(f"Error adding message to the database: {error}")
 
-    def get_messages_of(self, room_id: str):
+    def get_messages_of(self, conversation_id: str):
         """
-            Gets the messages of a specific room
+            Gets the messages of a specific conversation
         """
         try:
             # use pymongo to get the messages from the database
             print(
-                f"Getting messages of {room_id} from the database")
+                f"Getting messages of {conversation_id} from the database")
             messages_cursor = self.messages_collection.find(
-                {'room_id': room_id})
+                {'conversation_id': conversation_id}).sort([('updated_at', pymongo.DESCENDING)])
             messages = [ChatMessage(**message) for message in messages_cursor]
             if len(messages) == 0:
                 print(
-                    f"No messages found for room {room_id} in the database")
+                    f"No messages found for conversation {conversation_id} in the database")
             return messages
-        except TypeError as error:
-            print(
-                f"Error getting messages from the database: {error}")
-            return []
-        except ValueError as error:
-            print(
-                f"Error getting messages from the database: {error}")
-            return []
         except Exception as error:
             print(
                 f"Error getting messages from the database: {error}")

@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     MONGO_USERNAME: str
     MONGO_PASSWORD: str
     MONGODB_URI: str
+    REDIS_URL: str
+    REDIS_PORT: str
+    REDIS_HOST: str
     model_config = SettingsConfigDict(env_file=".env")
 
 @lru_cache
