@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     REDIS_URL: str
     REDIS_PORT: str
     REDIS_HOST: str
+    IMAGE_KIT_PUBLIC_KEY: str
+    IMAGE_KIT_PRIVATE_KEY: str
+    IMAGE_KIT_URL: str
     model_config = SettingsConfigDict(env_file=".env")
 
 @lru_cache

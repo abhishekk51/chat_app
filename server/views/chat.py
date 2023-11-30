@@ -1,11 +1,12 @@
 import datetime
 import uuid
 
-from fastapi import WebSocket, WebSocketDisconnect, status, Response, APIRouter
+from fastapi import WebSocket, WebSocketDisconnect, status, Response, APIRouter, UploadFile
 
 from server.controllers.messaging_data import MessageData
 from server.controllers.conversation_data import ConversationData
 from server.controllers.user_data import UserData
+from server.managers.imagekit_manager import ImageKitManager
 from server.managers.messaging_manager import MessagingManager
 from server.managers.conversation_manager import ConversationManager
 from server.models.chat_message import ChatMessage
@@ -53,7 +54,6 @@ async def send_message(websocket: WebSocket, conversation_id: str):
     conversation_data = ConversationData()
     await chat_manager.connect(websocket, conversation_id)
     try:
-        # await conversation_manager.add_conversation_listner(websocket)
         while True:
             # Receive the message from the client
             data = await websocket.receive_json()
@@ -67,6 +67,7 @@ async def send_message(websocket: WebSocket, conversation_id: str):
                     sender_id=data["sender_id"],
                     receiver_id=data["receiver_id"],
                     message=data["message"],
+                    image_url=data.get("image_url"),
                     conversation_id=conversation_id,
                     updated_at=datetime.datetime.now().timestamp()
                 )
@@ -76,9 +77,7 @@ async def send_message(websocket: WebSocket, conversation_id: str):
                 # Send the message to all the clients
                 await chat_manager.broadcast(message, conversation_id)
     except WebSocketDisconnect:
-        print('acchaaaaa')
         await chat_manager.disconnect(websocket, conversation_id)
-        print('chalaaaaa')
 
 
 @conversation_router.get("/get-messages/{conversation_id}", status_code=status.HTTP_200_OK)
@@ -114,3 +113,8 @@ async def get_all_user( response: Response, page: int = 1, limit: int = 10, sear
     
     response.status_code = status.HTTP_400_BAD_REQUEST
     return {"message": f"{user.get('message')}"}
+
+
+@conversation_router.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    return ImageKitManager().upload_file(file)

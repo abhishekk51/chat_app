@@ -45,6 +45,7 @@ class MessagingManager:
         '''
             Removes the connection from the active connections
         '''
+        print("Disconnecting", room_id)
         self.active_connections[room_id].remove(websocket)
         if len(self.active_connections[room_id]) == 0:
             del self.active_connections[room_id]
@@ -63,7 +64,6 @@ class MessagingManager:
         '''
         # for connection in self.active_connections[room_id]:
         #     await self.send_message_to(connection, message)
-
         await self.pubsub_client._publish(room_id, message)
 
     async def _pubsub_data_reader(self, pubsub_subscriber):

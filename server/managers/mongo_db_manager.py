@@ -15,7 +15,7 @@ class MongoDBConnection:
             if not cls._instance:
                 cls._instance = super(MongoDBConnection, cls).__new__(cls)
                 cls._instance.client = None
-                cls._instance.MONGODB_URI = get_settings().MONGODB_URI
+                cls._instance.MONGODB_URI = settings.MONGODB_URI
                 cls._instance.MAX_CONNECTIONS_COUNT = 10
                 cls._instance.MIN_CONNECTIONS_COUNT = 1
         return cls._instance
