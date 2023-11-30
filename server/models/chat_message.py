@@ -12,6 +12,7 @@ class ChatMessage(BaseModel):
     '''
     message: str
     message_id: str
+    image_url: str = None
     sender_id: str
     receiver_id: str
     conversation_id: str

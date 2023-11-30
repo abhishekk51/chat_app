@@ -1,5 +1,6 @@
 aioredis
 fastapi
+imagekitio
 uvicorn
 websockets
 uuid
@@ -8,3 +9,4 @@ colorlog
 pydantic
 pydantic-settings
 python-dotenv
+python-multipart
