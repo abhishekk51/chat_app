@@ -5,10 +5,12 @@ from fastapi import WebSocket, WebSocketDisconnect, status, Response, APIRouter
 
 from server.controllers.messaging_data import MessageData
 from server.controllers.conversation_data import ConversationData
+from server.controllers.user_data import UserData
 from server.managers.messaging_manager import MessagingManager
 from server.managers.conversation_manager import ConversationManager
 from server.models.chat_message import ChatMessage
 from server.models.conversation_model import ConversationCreate
+from server.models.user_model import User, UserCreate
 
 chat_manager = MessagingManager()
 conversation_manager = ConversationManager()
@@ -85,3 +87,30 @@ async def handle_new_connection_conversation(conversation_id: str, response: Res
     messages = message_data.get_messages_of(conversation_id)
     print(messages, 'conversation details')
     return {"message": None, "data": {"message_list": messages}}
+
+
+@conversation_router.post("/create-user/", status_code=status.HTTP_200_OK)
+async def create_new_user(user: UserCreate, response: Response):
+    user_data = UserData()
+    user = user_data.add_user(user)
+     
+    if not user.get('error'):
+        print(user, 'user details')
+        return {"message": user.get('message'), "data": user.get('data')}
+    
+    response.status_code = status.HTTP_400_BAD_REQUEST
+    return {"message": f"{user.get('message')}"}
+
+
+@conversation_router.get("/user-list/", status_code=status.HTTP_200_OK)
+async def get_all_user( response: Response, page: int = 1, limit: int = 10, search: str = ""):
+    
+    user_data = UserData()
+    user = user_data.get_all_users(page=page, limit=limit, search=search)
+     
+    if not user.get('error'):
+        print(user, 'user details')
+        return {"message": user.get('message'), "data": user.get('data')}
+    
+    response.status_code = status.HTTP_400_BAD_REQUEST
+    return {"message": f"{user.get('message')}"}

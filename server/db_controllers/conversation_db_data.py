@@ -21,7 +21,6 @@ class ConversationDBData:
         """
         try:
             update["$set"].update({"updated_at": datetime.datetime.utcnow()})
-            print('aaayyyyyaaa')
             result = self.conversion_collection.update_one(query, update, upsert=True)
             upserted_id = None
             # Check if a new document was inserted
