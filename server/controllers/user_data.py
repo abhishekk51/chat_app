@@ -6,7 +6,7 @@ from settings import get_settings
 from server.models.user_model import User, UserList
 
 from pymongo.collection import Collection
-
+import re
 settings = get_settings()
 
 
@@ -27,9 +27,17 @@ class UserData:
         """
             Adds a user
         """
+        validated_phone_number = self.validate_phone_number(user.phone_number)
+
+        if not validated_phone_number:
+            return {"error": True, "data": {}, "message": "Invalid phone number"}
+
+        # Check if the user already exists
         existing_user = self.user_collection.find_one({"phone_number": user.phone_number})
+        
         if existing_user:
-            return {"error": False, "data": user, "message": "User with the same phone number already exists"}
+            existing_user["_id"] = str(existing_user["_id"])
+            return {"error": False, "data": existing_user, "message": "User with the same phone number already exists"}
 
 
         try:
@@ -85,4 +93,12 @@ class UserData:
         except Exception as error:
             print(f"Error getting users from the database: {error}")
             return {"error": True, "data": [], "message": f"Error getting users from the database: {error}"}
+        
+    
+    def validate_phone_number(self, phone_number):
+        # Simple regex pattern for a generic phone number
+        pattern = re.compile(r'^[6789]\d{9}$')
+        print(pattern, phone_number)
+        return bool(re.match(pattern, phone_number))
+
     
