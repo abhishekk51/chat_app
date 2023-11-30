@@ -38,3 +38,23 @@ class User(BaseModel):
 
 class UserCreate(User):
     pass
+
+class UserList(User):
+    _id: Optional[ObjectId] = None
+
+    def to_dict(self):
+
+        user_dict= {
+            'full_name': self.full_name,
+            'email': self.email,
+            'phone_number': self.phone_number,
+            'gender': self.gender,
+            'updated_at': self.updated_at,
+            'is_deleted': self.is_deleted,
+            'is_active': self.is_active
+        }
+    
+        if self.id:
+            user_dict['_id'] = ObjectId(self.id)
+
+        return user_dict

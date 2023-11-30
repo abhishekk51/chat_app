@@ -3,7 +3,7 @@ import pymongo
 
 from server.managers.mongo_db_manager import MongoDBConnection
 from settings import get_settings
-from server.models.user_model import User
+from server.models.user_model import User, UserList
 
 from pymongo.collection import Collection
 
@@ -36,8 +36,13 @@ class UserData:
             # use pymongo to insert the message to the database
             # ensure document is updated if it already exists
             print("Adding user to the database")
-            self.user_collection.insert_one(user.to_dict())
-            return {"error": False, "data": user, "message": "User added successfully"}
+            result = self.user_collection.insert_one(user.to_dict())
+            # Fetch the inserted user with the retrieved ID
+            inserted_user = self.user_collection.find_one({"_id": result.inserted_id})
+            inserted_user["_id"] = str(result.inserted_id)
+
+            return {"error": False, "data": inserted_user, "message": "User added successfully"}
+
         
         except Exception as error:
             print(f"Error adding user to the database: {error}")
@@ -65,7 +70,12 @@ class UserData:
                 .limit(limit)
             )
 
-            users = [User(**user) for user in users_cursor]
+            users=[]
+            for user in users_cursor:
+                user["_id"] = str(user["_id"])
+
+                users.append(user)
+
             if not users:
                 print("No users found in the database")
                 return {"error": True, "data": [], "message": "No users found in the database"}
