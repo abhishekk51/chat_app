@@ -1,4 +1,6 @@
 """Module providing the MessagingData class to interact with the messaging controllers"""
+import datetime
+
 import pymongo
 
 from server.managers.mongo_db_manager import MongoDBConnection
@@ -36,6 +38,22 @@ class MessageData:
         except Exception as error:
             print(f"Error adding message to the database: {error}")
 
+    def update_message(self, message_id: str, payload: dict):
+        """
+            Updates a conversation to the database
+        """
+        # use pymongo to insert the conversation to the database
+        # ensure document is updated if it already exists
+        print("Updating message to the database")
+        update = {}
+        try:
+            update["$set"] = payload
+            self.messages_collection.update_one({"message_id": message_id}, update, upsert=True)
+            print("message updated to the database")
+        except Exception as error:
+            print(error)
+            return None
+
     def get_messages_of(self, conversation_id: str):
         """
             Gets the messages of a specific conversation
@@ -55,3 +73,5 @@ class MessageData:
             print(
                 f"Error getting messages from the database: {error}")
             return []
+
+

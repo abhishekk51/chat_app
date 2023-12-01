@@ -1,3 +1,4 @@
+import base64
 import datetime
 import uuid
 
@@ -9,7 +10,7 @@ from server.controllers.user_data import UserData
 from server.managers.imagekit_manager import ImageKitManager
 from server.managers.messaging_manager import MessagingManager
 from server.managers.conversation_manager import ConversationManager
-from server.models.chat_message import ChatMessage
+from server.models.chat_message import ChatMessage, MessageStatus
 from server.models.conversation_model import ConversationCreate
 from server.models.user_model import User, UserCreate
 
@@ -18,6 +19,7 @@ conversation_manager = ConversationManager()
 
 
 conversation_router = APIRouter()
+conversation_ws_router = APIRouter()
 
 
 @conversation_router.post("/add-conversation/", status_code=status.HTTP_201_CREATED)
@@ -43,7 +45,7 @@ async def handle_new_connection_conversation(user_id: str, response: Response):
     return {"message": None, "data": {"conversation_list": conversation}}
 
 
-@conversation_router.websocket("/connect-conversation/{conversation_id}")
+@conversation_ws_router.websocket("/connect-conversation/{conversation_id}")
 async def send_message(websocket: WebSocket, conversation_id: str):
     """
         Function to handle new conenctions to the conversation
@@ -115,6 +117,21 @@ async def get_all_user( response: Response, page: int = 1, limit: int = 10, sear
     return {"message": f"{user.get('message')}"}
 
 
-@conversation_router.post("/uploadfile/")
+@conversation_router.post("/uploadfile/", status_code=status.HTTP_200_OK)
 async def create_upload_file(file: UploadFile):
-    return ImageKitManager().upload_file(file)
+    binary_data = await file.read()
+    base64_data = base64.b64encode(binary_data).decode('utf-8')
+    image_url = ImageKitManager().upload_file(file, base64_data)
+    return {"message": None, "data": {"image_url": image_url}}
+
+
+@conversation_router.post("/receive-ack/", status_code=status.HTTP_200_OK)
+async def received_ack(message_id: str):
+    MessageData().update_message(message_id, {"message_status": MessageStatus.received})
+    return {"message": f"success"}
+
+
+@conversation_router.post("/read-ack/", status_code=status.HTTP_200_OK)
+async def read_ack(message_id: str):
+    MessageData().update_message(message_id, {"message_status": MessageStatus.read})
+    return {"message": f"success"}

@@ -2,10 +2,8 @@
     Class to manage the messaging
 """
 import asyncio
-import json
-import threading
 
-from fastapi import WebSocket, BackgroundTasks
+from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
 
 from main import SharedState
@@ -14,21 +12,21 @@ from server.models.chat_message import ChatMessage
 
 
 class MessagingManager:
-    '''
+    """
         Manages the active connections
-    '''
+    """
 
     def __init__(self) -> None:
-        '''
+        """
             Initializes the active connections
-        '''
+        """
         self.active_connections: dict[str, set[WebSocket]] = {}
         self.pubsub_client = RedisPubSubManager()
 
     async def connect(self, websocket: WebSocket, room_id: str):
-        '''
+        """
             Adds the connection to the active connections
-        '''
+        """
         # Accept the user connection
         await websocket.accept()
 
@@ -42,9 +40,9 @@ class MessagingManager:
             self.active_connections[room_id].add(websocket)
 
     async def disconnect(self, websocket: WebSocket, room_id: str):
-        '''
+        """
             Removes the connection from the active connections
-        '''
+        """
         print("Disconnecting", room_id)
         self.active_connections[room_id].remove(websocket)
         if len(self.active_connections[room_id]) == 0:
@@ -52,16 +50,16 @@ class MessagingManager:
             await self.pubsub_client.unsubscribe(room_id)
 
     async def send_message_to(self, websocket: WebSocket, message: ChatMessage):
-        '''
+        """
             Sends the message to a specific client
-        '''
+        """
         json_message = jsonable_encoder(message.to_dict())
         await websocket.send_json(json_message)
 
     async def broadcast(self, message: ChatMessage, room_id: str):
-        '''
+        """
             Sends the message to all the clients
-        '''
+        """
         # for connection in self.active_connections[room_id]:
         #     await self.send_message_to(connection, message)
         await self.pubsub_client._publish(room_id, message)

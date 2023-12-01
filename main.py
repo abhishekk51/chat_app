@@ -41,9 +41,10 @@ async def shutdown_event():
     await asyncio.gather(*tasks, return_exceptions=True)
 
 
-from server.urls import router as chat
+from server.urls import router as chat_api, ws_routers as ws_chat_api
 
-app.include_router(chat, tags=['Chat'], prefix='/api/chat')
+app.include_router(ws_chat_api, tags=['WS-Chat'], prefix='/ws/chat')
+app.include_router(chat_api, tags=['Chat'], prefix='/api/chat')
 
 
 @app.get("/api/healthcheck")

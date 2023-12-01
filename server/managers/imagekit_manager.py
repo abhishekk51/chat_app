@@ -14,16 +14,13 @@ class ImageKitManager:
             url_endpoint=settings.IMAGE_KIT_URL
         )
 
-    def upload_file(self, file):
+    def upload_file(self, file, binary_data):
         print(file, file.filename, 'fjslkfjsdlfkdjsflk')
         upload = self.imagekit.upload_file(
-            file=file.file,
+            file=binary_data,
             file_name=file.filename
         )
-        print(upload)
 
         # Raw Response
         print(upload.response_metadata.raw)
-
-        # print that uploaded file's ID
-        print(upload.file_id)
+        return upload.response_metadata.raw.get('url')
