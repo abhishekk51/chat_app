@@ -48,7 +48,7 @@ async def handle_new_connection_conversation(user_id: str, response: Response):
 @conversation_ws_router.websocket("/connect-conversation/{conversation_id}")
 async def send_message(websocket: WebSocket, conversation_id: str):
     """
-        Function to handle new conenctions to the conversation
+        Function to handle new connections to the conversation
         The function accepts the connection from the client
         and sends all the available conversation to the client
     """
@@ -126,12 +126,16 @@ async def create_upload_file(file: UploadFile):
 
 
 @conversation_router.post("/receive-ack/", status_code=status.HTTP_200_OK)
-async def received_ack(message_id: str):
+async def received_ack(message_id: str, conversation_id: str):
     MessageData().update_message(message_id, {"message_status": MessageStatus.received})
+    message = MessageData().get_message(message_id)
+    await chat_manager.broadcast(message, conversation_id)
     return {"message": f"success"}
 
 
 @conversation_router.post("/read-ack/", status_code=status.HTTP_200_OK)
-async def read_ack(message_id: str):
+async def read_ack(message_id: str, conversation_id: str):
     MessageData().update_message(message_id, {"message_status": MessageStatus.read})
+    message = MessageData().get_message(message_id)
+    await chat_manager.broadcast(message, conversation_id)
     return {"message": f"success"}

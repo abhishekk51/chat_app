@@ -3,6 +3,7 @@
 """
 import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -12,13 +13,14 @@ class MessageStatus(str, Enum):
     received = 1
     read = 2
 
+
 class ChatMessage(BaseModel):
     '''
         Chat message dataclass
     '''
     message: str
     message_id: str
-    image_url: str = None
+    image_url: Optional[str] = None
     sender_id: str
     receiver_id: str
     conversation_id: str

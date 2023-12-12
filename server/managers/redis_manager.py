@@ -25,6 +25,9 @@ class RedisPubSubManager:
 
     async def _publish(self, room_id: str, message: ChatMessage) -> None:
         serialized_message = json.dumps(message.to_dict())
+        if not self.redis_connection:
+            self.redis_connection = await self._get_redis_connection()
+        print(self.redis_connection, 'redis connection')
         await self.redis_connection.publish(room_id, serialized_message)
 
     async def subscribe(self, room_id: str) -> aioredis.Redis:

@@ -2,6 +2,7 @@
 import datetime
 
 import pymongo
+from bson import ObjectId
 
 from server.managers.mongo_db_manager import MongoDBConnection
 from settings import get_settings
@@ -73,5 +74,34 @@ class MessageData:
             print(
                 f"Error getting messages from the database: {error}")
             return []
+
+    def get_message(self, message_id):
+        """
+        Retrieves a message from the database based on message_id
+        """
+        try:
+
+            query = {"message_id": message_id}
+            message_document = self.messages_collection.find_one(query)
+            if message_document:
+                message_document.pop('_id')
+                message = ChatMessage(
+                    message_id=message_document["message_id"],
+                    sender_id=message_document["sender_id"],
+                    receiver_id=message_document["receiver_id"],
+                    message=message_document["message"],
+                    image_url=message_document.get("image_url"),
+                    conversation_id=message_document["conversation_id"],
+                    updated_at=message_document["updated_at"],
+                    is_deleted=message_document["is_deleted"],
+                    message_status=message_document["message_status"]
+                )
+                return message
+            else:
+                print(f"Message with id {message_id} not found.")
+                return None
+        except Exception as error:
+            print(f"Error retrieving message from the database: {error}")
+            return None
 
 

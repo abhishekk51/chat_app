@@ -27,7 +27,7 @@ class MessagingManager:
         """
             Adds the connection to the active connections
         """
-        # Accept the user connection
+        # Accept the user connectionredis_connection
         await websocket.accept()
 
         if room_id not in self.active_connections:

@@ -11,7 +11,6 @@ class SharedState:
     async_tasks = list()
 
 
-
 # Instance of the FastAPI app
 app = FastAPI()
 
@@ -41,7 +40,9 @@ async def shutdown_event():
     await asyncio.gather(*tasks, return_exceptions=True)
 
 
+# Importing the routers
 from server.urls import router as chat_api, ws_routers as ws_chat_api
+
 
 app.include_router(ws_chat_api, tags=['WS-Chat'], prefix='/ws/chat')
 app.include_router(chat_api, tags=['Chat'], prefix='/api/chat')
