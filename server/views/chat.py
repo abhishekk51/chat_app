@@ -28,11 +28,11 @@ async def handle_add_conversation(conversation: ConversationCreate, response: Re
         Function to handle new conversation created by a client
     """
     conversation_data = ConversationData()
-    conversation = conversation_data.add_conversation(conversation)
+    conversation, conversation_id = conversation_data.add_conversation(conversation)
     if conversation:
         await conversation_manager.broadcast_conversation(conversation)
         print(conversation, 'conversation details')
-        return {"message": "conversation added", "data": {"conversation_id": conversation}}
+        return {"message": "conversation added", "data": {"conversation_id": conversation_id}}
     response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     return {"message": "conversation not added"}
 

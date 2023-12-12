@@ -44,8 +44,7 @@ class ConversationData:
                 )
 
             print("conversation added to the database")
-            valid_conversation.conversation_id = str(upserted_id)
-            return valid_conversation
+            return valid_conversation, upserted_id
         except Exception as error:
             print(error)
             return None
