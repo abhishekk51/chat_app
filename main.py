@@ -1,7 +1,7 @@
 """Main app server"""
 import asyncio
 
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from server.managers.mongo_db_manager import MongoDB

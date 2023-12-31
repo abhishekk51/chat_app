@@ -15,7 +15,6 @@ class ImageKitManager:
         )
 
     def upload_file(self, file, binary_data):
-        print(file, file.filename, 'fjslkfjsdlfkdjsflk')
         upload = self.imagekit.upload_file(
             file=binary_data,
             file_name=file.filename
